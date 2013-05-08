@@ -54,8 +54,6 @@ def continous_flip_flop(x, status=None):
     status.ucl = ucl
     status.lcl = lcl
     
-    # print 'agile %f lower %f upper %f' % (status.f_agile, lcl, ucl)
-    
     # Run flip-flop logic
     # if status.f_agile >= lcl and status.f_agile <= ucl:
     if status.forecast >= lcl and status.forecast <= ucl:
