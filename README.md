@@ -1,7 +1,6 @@
 Flip-Flop Filter
 =====================
 
-Python implementation of the
+Python implementation of a flip-flop filter as described by: 
 
-
- [The P-Square Algorithm for Dynamic Calculation of Percentiles and Histograms without Storing Observations by Jain and Chlamtac](http://www.cse.wustl.edu/~jain/papers/psqr.htm). 
+Kim, M., & Noble, B. (2001). Mobile network estimation. Proceedings of the 7th annual international conference on Mobile computing and networking (pp. 298–309). New York, NY, USA: ACM. doi:10.1145/381677.381705
