@@ -7,8 +7,8 @@ data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 14,
 def main():
     # Add some random noise
     demand = np.array(data)
-    # rand = np.random.normal(loc=0, scale=2, size=len(demand))
-    # demand += rand
+    rand = np.random.normal(loc=0, scale=1, size=len(demand))
+    demand += rand
 
     # Run smoother
     s0 = []
