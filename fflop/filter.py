@@ -1,9 +1,11 @@
+import numpy as np
+
 class Status(object):
-    def __init__(self):
+    def __init__(self, buf):
         self.f_agile = None
         self.f_stable = None
         self.b_bar = None
-        self.mw = [10]
+        self.mw = [0]
         self.x_prev = None
         self.x_bar = None
         
@@ -12,16 +14,24 @@ class Status(object):
         
         self.forecast = 0
         
+        self._buf = buf
+        self._bufi = 0
+        
     def mean(self):
-        s = 0
-        for x in self.mw:
-            s += x
-        return float(s) / float(len(self.mw))
+        return np.mean(self.mw)
+
+    def append(self, x):
+        if len(self.mw) > self._buf:
+            self.mw[self._bufi] = x
+            self._bufi = (self._bufi + 1) % self._buf
+        else:
+            self.mw.append(x)    
 
 class FlipFlop(object):
-    def __init__(self, l=0.1, u=0.9):
+    def __init__(self, l=0.1, u=0.9, buf=10):
         self.l = l
         self.u = u
+        self.buf = buf
     
     def continous(self, x, status=None):
         '''
@@ -31,8 +41,8 @@ class FlipFlop(object):
         '''
         
         # Initialize status
-        if status == None:
-            status = Status()
+        if status is None:
+            status = Status(self.buf)
         
         # Update agile and stable EWMA
         status.f_agile = self.continous_single_exponential_smoothed(status.f_agile, x, self.u)
@@ -52,23 +62,20 @@ class FlipFlop(object):
         status.lcl = lcl
         
         # Run flip-flop logic
-        # if status.f_agile >= lcl and status.f_agile <= ucl:
         if status.forecast >= lcl and status.forecast <= ucl:
+            # forecast is within control limits
             forecast = status.forecast
-            
-            # Update moving range
-            if status.x_prev != None:
-                delta = abs(x - status.x_prev)
-                status.mw.append(delta)
-                l = 3
-                if len(status.mw) > l:
-                    status.mw = status.mw[-l:]
-                    
         else:
+            # Select forecast that is within control limits
             if status.f_agile >= lcl and status.f_agile <= ucl:
                 forecast = status.f_agile
             else:
                 forecast = status.f_stable
+        
+        # Update moving range calculation
+        if status.x_prev != None:
+            delta = abs(x - status.x_prev)
+            status.append(delta)
         
         # Return status and forecast
         status.x_prev = x
@@ -79,7 +86,6 @@ class FlipFlop(object):
     def continous_single_exponential_smoothed(self, f_t, data_t, alpha):
         # Smoothing equation (1)
         # f_t is the forecasted value for f_{t+1}
-        
         if f_t == None: 
             return data_t
         
@@ -87,10 +93,11 @@ class FlipFlop(object):
         
         return f_t
 
-def flip_flop(readings):
+
+def flip_flop(samples):
     ff = FlipFlop()
     status = None
-    for x in readings:
+    for x in samples:
         forecast, status = ff.continous(x, status) 
     return forecast
 

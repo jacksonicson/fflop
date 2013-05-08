@@ -19,7 +19,7 @@ def main():
     f_t = None
     ff = filter.FlipFlop()
     for x in demand:
-        forecast, status = ff.continous(x, status)
+        forecast, status = ff.continous(float(x), status)
         s0.append(forecast)
         
         ua.append(status.ucl)
