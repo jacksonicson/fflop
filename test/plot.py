@@ -19,7 +19,7 @@ def main():
     # Add some random noise
     demand = np.array(data)
     rand = np.random.normal(loc=0, scale=1, size=len(demand))
-    demand += rand
+    # demand += rand
 
     # Run smoother
     s0 = []
